@@ -1,0 +1,76 @@
+#Pré-requisitos :
+# Terminal>pip install opencv-python
+# Terminal>pip install mediapipe
+import cv2
+import os
+import mediapipe as mp
+mp_drawing = mp.solutions.drawing_utils
+mp_drawing_styles = mp.solutions.drawing_styles
+mp_holistic = mp.solutions.holistic
+
+# Capturando o vídeo de entrada:
+
+script_dir = os.path.dirname(os.path.abspath(__file__))
+input_video_path = os.path.join(script_dir, 'Unlocking Facial Recognition_ Diverse Activities Analysis.mp4')  # Nome do vídeo de entrada
+cap = cv2.VideoCapture(input_video_path)
+
+# Obter propriedades do vídeo
+
+width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+fps = int(cap.get(cv2.CAP_PROP_FPS))
+total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+   
+# Definir o codec e criar o objeto VideoWriter
+
+fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # Codec para MP4
+out = cv2.VideoWriter('Atividades_com_Landmarks_Holistic_mediapipe.mp4', fourcc, fps, (width, height))
+
+with mp_holistic.Holistic(
+    min_detection_confidence=0.5,
+    min_tracking_confidence=0.5) as holistic:
+  while cap.isOpened():
+    success, image = cap.read()
+    if not success:
+      print("Ignorando frame vazio.")
+      break
+
+    # Com o objetivo de melhorar o desempenho, marcar o frame como não gravável (ignorar)
+    
+    image.flags.writeable = False
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    results = holistic.process(image)
+
+    # Desenhando os landmarks na imagem
+    image.flags.writeable = True
+    image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+
+    #Processando o frame para detectar as faces e desenhar as anotações da face no frame
+
+    mp_drawing.draw_landmarks(
+        image,
+        results.face_landmarks,
+        mp_holistic.FACEMESH_CONTOURS,
+        landmark_drawing_spec=None,
+        connection_drawing_spec=mp_drawing_styles
+        .get_default_face_mesh_contours_style())
+    
+    #Processando o frame para detectar as poses e desenhar as anotações da pose no frame
+
+    mp_drawing.draw_landmarks(
+        image,
+        results.pose_landmarks,
+        mp_holistic.POSE_CONNECTIONS,
+        landmark_drawing_spec=mp_drawing_styles
+        .get_default_pose_landmarks_style())
+    # 
+    # Escrever o frame processado no vídeo de saída
+
+    out.write(image)
+
+    #Mostrar na tela o frame processado
+    cv2.imshow('MediaPipe Holistic', image)
+
+    if cv2.waitKey(5) & 0xFF == 27:
+      break
+cap.release()
