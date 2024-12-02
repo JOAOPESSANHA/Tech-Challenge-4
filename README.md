@@ -12,5 +12,11 @@ Terminal>python ./detect_expression_video.py
 
 Como saída, teremos um resumo dos contadores de expressões detectadas no vídeo de entrada, bem como o arquivo "output_video_Facial_Recognition.mp4" mostrando as faces detectadas, dentro de retângulos verdes e suas respectivas classificações. Esse arquivo servirá para verificar a precisão de detecção das faces e emoções.
 
-Em seguida, utilizando como entrada o mesmo arquivo "Unlocking Facial Recognition_ Diverse Activities Analysis", o código reabre o arquivo de entrada efetua a detecção de poses, com a impressão de pontos de marcação ("Landmarks") que serão utilizados para classificar os movimentos escolhidos.
-No caso, escolhemos o movimento de apertar as mãos (hand shake) que aparece em uma parte do vídeo de entrada.
+Em seguida, utilizando como entrada o mesmo arquivo "Unlocking Facial Recognition_ Diverse Activities Analysis", o código reabre o arquivo de entrada e efetua a detecção de poses, com a impressão de pontos de marcação ("Landmarks") que serão utilizados para classificar os movimentos escolhidos. Como saída, o programa imprime o número de repetições do movimento escolhido detectado no arquivo de entrada e grava um outro vídeo mostrando as marcações (Landmarks) desenhadas no vídeo (output_video_braco_esquerdo_levantado.mp4).
+
+No caso, escolhemos o movimento de levantar o braço esquerdo (left arm up) que aparece na maioria das cenas do vídeo de entrada. Sua execução é iniciada pelo comando no terminal do VSCode:
+
+Terminal>pip install opencv-python mediapipe tf-keras tqdm
+
+Terminal>python pose_detection_arm_up
+
